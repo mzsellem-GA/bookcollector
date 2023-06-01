@@ -21,14 +21,15 @@ def books_index(request):
 def books_detail(request, book_id):
     book = Book.objects.get(id=book_id)
     id_list = book.bookstores.all().values_list('id')
+    bookstores_book_doesnt_have = Bookstore.objects.exclude(id__in=id_list)
     chapter_form = ChapterForm()
     return render(request, 'books/detail.html', {
-        'book': book, 'chapter_form': chapter_form
+        'book': book, 'chapter_form': chapter_form, 'bookstores': bookstores_book_doesnt_have
     })
 
 class BookCreate(CreateView):
     model = Book
-    fields = '__all__'
+    fields = ['title', 'genre', 'published']
 
 class BookUpdate(UpdateView):
     model = Book
@@ -67,3 +68,11 @@ class BookstoreUpdate(UpdateView):
 class BookstoreDelete(DeleteView):
   model = Bookstore
   success_url = '/bookstores'
+
+def assoc_bookstore(request, book_id, bookstore_id):
+   Book.objects.get(id=book_id).bookstores.add(bookstore_id)
+   return redirect('detail', book_id=book_id)
+
+def unassoc_bookstore(request, book_id, bookstore_id):
+   Book.objects.get(id=book_id).bookstores.remove(bookstore_id)
+   return redirect('detail', book_id=book_id)
