@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView
 
-from .models import Book
+from .models import Book, Bookstore
 from .forms import ChapterForm
 
 # Create your views here.
@@ -19,6 +20,7 @@ def books_index(request):
     })
 def books_detail(request, book_id):
     book = Book.objects.get(id=book_id)
+    id_list = book.bookstores.all().values_list('id')
     chapter_form = ChapterForm()
     return render(request, 'books/detail.html', {
         'book': book, 'chapter_form': chapter_form
@@ -47,3 +49,21 @@ def add_chapter(request, book_id):
     new_chapter.book_id = book_id
     new_chapter.save()
   return redirect('detail', book_id=book_id)
+
+class BookstoreList(ListView):
+  model = Bookstore
+
+class BookstoreDetail(DetailView):
+  model = Bookstore
+
+class BookstoreCreate(CreateView):
+  model = Bookstore
+  fields = '__all__'
+
+class BookstoreUpdate(UpdateView):
+  model = Bookstore
+  fields = ['name', 'phone']
+
+class BookstoreDelete(DeleteView):
+  model = Bookstore
+  success_url = '/bookstores'

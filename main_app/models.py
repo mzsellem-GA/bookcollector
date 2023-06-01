@@ -8,11 +8,22 @@ TOOLONG = (
     ('NR', 'Not Really'),
 )
 
+class Bookstore(models.Model):
+  name = models.CharField(max_length=50)
+  phone = models.IntegerField()
+
+  def __str__(self): 
+    return self.name
+
+  def get_absolute_url(self):
+    return reverse('bookstores_detail', kwargs={'pk': self.id})
+
 # Create your models here.
 class Book(models.Model):
     title = models.CharField(max_length=100)
     genre = models.CharField(max_length=100)
     published = models.IntegerField()
+    bookstores = models.ManyToManyField(Bookstore)
 
     def __str__(self):
         return f'{self.title} ({self.id})'
